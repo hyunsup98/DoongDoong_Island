@@ -49,26 +49,34 @@
 - Version Control : `Github`
 
 
-## 핵심 구현 사항
+## 담당 기능
 💡 **클래스명을 클릭하면 해당 소스 코드로 이동합니다.**
 
 ### 1. 데이터 파서 자동화 툴
 - [`TableSOGeneratorWindow`](Assets/0.Scripts/CSVParser/Editor/TableSOGeneratorWindow.cs)
-  - Unity Editor 메뉴에서 CSV 경로와 SO 저장 경로를 지정하고, 파싱 및 SO 생성을 실행하는 데이터 자동화 창
+  - Unity Editor 메뉴에서 CSV 경로와 SO 저장 경로를 지정하고, 파싱 및 SO 생성을 실행하는 에디터 툴 구현 클래스
+  - EditorPrefs를 사용해 경로 저장, 
  
 - [`TableSOGenerator`](Assets/0.Scripts/CSVParser/Editor/TableSOGenerator.cs)
   - CSV 테이블을 파싱해 데이터용 ScriptableObject 클래스와 Database 클래스를 자동 생성하고, CSV 데이터를 실제 SO 에셋으로 주입하는 핵심 생성 로직
+  - 파싱 과정: `에디터 창에서 경로 지정` → `CSV 헤더를 읽어서 컬럼 정보로 변환` → `Scriptable Object 클래스 코드를 생성` → `실제 값이 들어간 Scriptable Object 생성`
 
 - [`CsvClassData`](Assets/0.Scripts/CSVParser/Editor/CsvClassData.cs)
   - CSV 헤더, 컬럼 타입, 데이터 개수 등 파싱 결과를 담는 데이터 컨테이너
 
+ - [`TableBase`](Assets/0.Scripts/CSVParser/Table/TableBase.cs) & [`TableDatabase`](Assets/0.Scripts/CSVParser/Table/TableDatabase.cs)
+  - 데이터 파서 툴을 이용해 생성된 DataSO와 DatabaseSO가 공통으로 상속받는 기반 클래스
+  - DataSO에서는 데이터의 고유 ID를 반환하도록 하는 추상 메서드 구현, DatabaseSO에서는 인덱서를 통해 ID 기준 조회가 가능하도록 구현
+
 
 ### 2. 데스크탑 위젯 시스템
 - [`WindowCore`](Assets/0.Scripts/WindowController/WindowCore.cs)
-  - Windows 네이티브 API와 LibUniWinC.dll 연동을 통해 창 위치, 크기, 투명도, 작업표시줄 대응을 처리하는 저수준 윈도우 제어 클래스
+  - Win32 API를 래핑한 UniWinController 라이브러리를 활용하여 창 위치, 크기, 투명도 등을 처리하는 저수준 윈도우 제어 클래스
+  - 라이브러리에서 지원하지 않는 작업 표시줄 대응 등의 기능은 직접 Win32 API 함수를 P/Invoke하여 구현
  
 - [`WindowController`](Assets/0.Scripts/WindowController/WindowController.cs)
   - 투명 창, 클릭 통과, 최상단 고정 여부, 모니터 전환 등 데스크탑 위젯처럼 동작하는 윈도우 제어 기능을 관리 및 설정
+  - 인스펙터를 통해 간단하게 운영체제 관련 기능 설정 가능
 
 
 ### 3. 다국어 지원 (Localization)
@@ -96,6 +104,8 @@
 ### 5. 사운드 매니저 및 음반 시스템
 - [`SoundManager`](Assets/0.Scripts/System/SoundManager.cs)
   - BGM(배경음), SFX(효과음), AMB(환경음), Preview(미리듣기) 사운드 타입 별 재생과 볼륨/음소거 설정, 사운드 페이드 효과, SFX(효과음) 풀 관리 등의 기능을 통합 관리하는 매니저 클래스
+  - 코루틴을 이용해 페이드 재생 효과, 효과음 풀 정리, 재생 완료 체크 등의 지연 처리
+  - 코루틴 객체와 `WaitForSeconds` 등 반복 사용되는 YieldInstruction을 미리 캐싱해 GC 할당을 최소화
 
 - [`UI_Record`](Assets/0.Scripts/UI/Record/UI_Record.cs)
   - 음반 UI의 진입점으로 BGM/AMB 재생 리스트를 관리하고, 기본 음반 재생을 시작하는 역할
@@ -123,8 +133,29 @@
   - 외부에서는 프로퍼티를 통해 접근하도록 하여 코드의 안정성과 확장성 증가
 
 - [`DataManager`](Assets/0.Scripts/System/Data/DataManager.cs)
-  - 각 데이터를 관리하는 DatabaseSO를 참조하는 데이터 중앙 관리 클래스
+  - 각 데이터별 DatabaseSO를 참조하는 전역 데이터 관리 클래스
+  - 게임 내 시스템들이 데이터에 일관되게 접근할 수 있도록 중앙 진입점 역할 수행
+ 
+### 7. 화면 컨트롤러 (섬&호수 화면 이동/크기 조절)
+- [`CameraController`](Assets/0.Scripts/System/Camera/CameraController.cs)
+  - 섬 화면 UI의 이동/크기 조절에 따라 섬 3D 오브젝트를 비추는 카메라를 컨트롤하는 클래스
+  - 섬 화면 UI의 위치 비율과 스케일 비율을 기준으로 카메라 시야 범위와 오프셋을 동기화
 
+- [`UI_IslandWindow`](Assets/0.Scripts/UI/Window/UI_IslandWindow.cs)
+  - 섬 화면 UI 관련 조작을 관리 (화면 이동, 크기 조절 등)
+
+- [`UI_WaterWindow`](Assets/0.Scripts/UI/Window/UI_WaterWindow.cs)
+  - 호수 화면 UI 관련 조작을 관리 (UI 켜기/끄기, UI 높이 조절 등)
+
+### 8. 공통 유틸리티 및 보조 시스템
+- [`ExtensionManager`](Assets/0.Scripts/Util/ExtensionManager.cs)
+  - 반복적으로 사용되는 기능을 확장 메서드로 분리하여 코드 재사용성 증가
+ 
+- [`Singleton`](Assets/0.Scripts/DesignPattern/Singleton/Singleton.cs)
+  - 매니저 클래스에서 공통으로 사용할 수 있는 제네릭 기반 싱글턴 클래스 구현
+
+- [`InteractObject`](Assets/0.Scripts/InteractObject/InteractObject.cs) & [`IInteract`](Assets/0.Scripts/Interface/Interact/IInteract.cs)
+  - 게임 내 오브젝트와 플레이어/시스템 간의 상호작용 처리를 위한 인터페이스와 이를 상속받는 추상 클래스 구현
 
 
 
