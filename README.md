@@ -54,6 +54,7 @@
 💡 **클래스명을 클릭하면 해당 소스 코드로 이동합니다.**
 
 ### 1. 데이터 파서 자동화 툴
+목적: 기획 데이터(데이터 테이블) 변경 시 발생할 수 있는 실수를 방지, 데이터 수정 - 반영 워크플로우를 자동화하여 개발 생산성 극대화
 - [`TableSOGeneratorWindow`](Assets/0.Scripts/CSVParser/Editor/TableSOGeneratorWindow.cs)
   - Unity Editor 메뉴에서 CSV 경로와 SO 저장 경로를 지정하고, 파싱 및 SO 생성을 실행하는 에디터 툴 구현 클래스
   - EditorPrefs를 사용해 경로 저장, 
@@ -71,6 +72,7 @@
 
 
 ### 2. 데스크탑 위젯 시스템
+목적: 데스크탑 위젯 게임 특성에 맞게 운영체제 시스템 제어가 필요, 필요한 운영체제 기능만을 담당하는 클래스 구현 목적
 - [`WindowCore`](Assets/0.Scripts/WindowController/WindowCore.cs)
   - Win32 API를 래핑한 UniWinController 라이브러리를 활용하여 창 위치, 크기, 투명도 등을 처리하는 저수준 윈도우 제어 클래스
   - 라이브러리에서 지원하지 않는 작업 표시줄 대응 등의 기능은 직접 Win32 API 함수를 P/Invoke하여 구현
@@ -81,6 +83,7 @@
 
 
 ### 3. 다국어 지원 (Localization)
+목적: UI 컴포넌트와 데이터 간의 의존성을 분리, 런타임 언어 설정 변경에 유연하게 대응하기 위한 커스텀 Localization 환경 구축 / 내장 Localization 패키지 대비 GC 할당향을 90% 이상 감소
 - [`LocalizationManager`](Assets/0.Scripts/System/LocalizationManager.cs)
   - 현재 언어 설정에 맞춰 문자열 테이블에서 텍스트를 반환하고, 사용 기기 시스템 언어 기반 초기 언어 설정을 담당
 
@@ -92,6 +95,7 @@
 
 
 ### 4. 오브젝트 풀링
+목적: 빈번한 객체 생성/파괴로 인한 메모리 단편화 및 가비지 컬렉션 스파이크 방지, 프레임 안정성 확보
 - [`ObjectPoolManager`](Assets/0.Scripts/DesignPattern/ObjectPooling/ObjectPoolManager.cs)
   - 풀 초기 크기, 최대 크기, 생성 위치 등 공통 설정을 제공하는 오브젝트 풀링 기반 클래스
 
@@ -103,10 +107,12 @@
 
 
 ### 5. 사운드 매니저 및 음반 시스템
+목적: 사운드(BGM, SFX, AMB, Preview)의 개별적 오디오 믹싱 환경 구축과 유저 조작 음반 기능 구현
 - [`SoundManager`](Assets/0.Scripts/System/SoundManager.cs)
   - BGM(배경음), SFX(효과음), AMB(환경음), Preview(미리듣기) 사운드 타입 별 재생과 볼륨/음소거 설정, 사운드 페이드 효과, SFX(효과음) 풀 관리 등의 기능을 통합 관리하는 매니저 클래스
   - 코루틴을 이용해 페이드 재생 효과, 효과음 풀 정리, 재생 완료 체크 등의 지연 처리
   - 코루틴 객체와 `WaitForSeconds` 등 반복 사용되는 YieldInstruction을 미리 캐싱해 GC 할당을 최소화
+  - 오디오 믹서를 활용해 사운드 타입 별 볼륨 조절을 관리
 
 - [`UI_Record`](Assets/0.Scripts/UI/Record/UI_Record.cs)
   - 음반 UI의 진입점으로 BGM/AMB 재생 리스트를 관리하고, 기본 음반 재생을 시작하는 역할
@@ -125,12 +131,13 @@
 
 
 ### 6. 설정창 & 로컬 데이터 관리
+목적: 로컬 데이터 저장 로직을 중앙화하여 코드 안정성을 높이고 확장성을 증가
 - [`UI_Settings`](Assets/0.Scripts/UI/Settings/UI_Settings.cs)
   - 언어, 사운드, 위젯 관련 설정 등 게임의 전반적인 설정을 관리
 
 - [`PlayerPrefsDataManager`](Assets/0.Scripts/System/PlayerPrefsDataManager.cs)
   - 언어, 볼륨, 음소거, 위젯 관련 설정 등의 로컬 설정값을 PlayerPrefs로 저장/로드
-  - 로컬 데이터 저장 전용 정적 클래스를 통해 데이터 저장 로직을 중앙화 및 유지보수성 향상
+  - 로컬 데이터 저장 매니저를 통해 데이터 저장 로직을 중앙화 및 유지보수성 향상
   - 외부에서는 프로퍼티를 통해 접근하도록 하여 코드의 안정성과 확장성 증가
 
 - [`DataManager`](Assets/0.Scripts/System/Data/DataManager.cs)
@@ -138,6 +145,7 @@
   - 게임 내 시스템들이 데이터에 일관되게 접근할 수 있도록 중앙 진입점 역할 수행
  
 ### 7. 화면 컨트롤러 (섬&호수 화면 이동/크기 조절)
+목적: 2D UI 화면과 3D 오브젝트의 이동, 크기 조절 등을 동기화 시켜 자연스러운 화면 전환 및 위젯형 플레이 경험 제공
 - [`CameraController`](Assets/0.Scripts/System/Camera/CameraController.cs)
   - 섬 화면 UI의 이동/크기 조절에 따라 섬 3D 오브젝트를 비추는 카메라를 컨트롤하는 클래스
   - 섬 화면 UI의 위치 비율과 스케일 비율을 기준으로 카메라 시야 범위와 오프셋을 동기화
@@ -149,6 +157,7 @@
   - 호수 화면 UI 관련 조작을 관리 (UI 켜기/끄기, UI 높이 조절 등)
 
 ### 8. 공통 유틸리티 및 보조 시스템
+목적: 코드 재사용성 증가, 유지 보수성 향상을 위한 유틸리티 코드 작성, 생산성 증가
 - [`ExtensionManager`](Assets/0.Scripts/Util/ExtensionManager.cs)
   - 반복적으로 사용되는 기능을 확장 메서드로 분리하여 코드 재사용성 증가
  
