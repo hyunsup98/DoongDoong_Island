@@ -39,7 +39,7 @@
 | QA | 이종곤 | • TQA<br>• White QA | [@jonggon1104-cpu](https://github.com/jonggon1104-cpu) |
 
 </div>
-<br>
+<br><br>
 
 ## 사용 기술 스택
 
@@ -48,7 +48,7 @@
 - Library & Plugins : `DOTWeen`, `UniWinController`
 - Version Control : `Github`
 
-<br>
+<br><br>
 
 ## 담당 기능
 💡 **클래스명을 클릭하면 해당 소스 코드로 이동합니다.**
