@@ -66,8 +66,8 @@
   - CSV 헤더, 컬럼 타입, 데이터 개수 등 파싱 결과를 담는 데이터 컨테이너
 
  - [`TableBase`](Assets/0.Scripts/CSVParser/Table/TableBase.cs) & [`TableDatabase`](Assets/0.Scripts/CSVParser/Table/TableDatabase.cs)
-  - 데이터 파서 툴을 이용해 생성된 DataSO와 DatabaseSO가 공통으로 상속받는 기반 클래스
-  - DataSO에서는 데이터의 고유 ID를 반환하도록 하는 추상 메서드 구현, DatabaseSO에서는 인덱서를 통해 ID 기준 조회가 가능하도록 구현
+   - 데이터 파서 툴을 이용해 생성된 DataSO와 DatabaseSO가 공통으로 상속받는 기반 클래스
+   - DataSO에서는 데이터의 고유 ID를 반환하도록 하는 추상 메서드 구현, DatabaseSO에서는 인덱서를 통해 ID 기준 조회가 가능하도록 구현
 
 
 ### 2. 데스크탑 위젯 시스템
